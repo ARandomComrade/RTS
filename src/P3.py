@@ -5,16 +5,19 @@
 import threading
 import random
 class P3:
-    def __init__(self, bufferC, bufferD, planeX, planeY,planeZ):
+    def __init__(self, bufferC, bufferD, planeX, planeY,planeZ,zx1,yy1):
         self.bufferC = bufferC
         self.bufferD = bufferD
         self.f_Collision = False
+        self.zx1=zx1
+        self.yy1=yy1
     
 
     def check(self, time, bufferC, bufferD, semC, semD,planeX,planeY,planeZ, semA, semB, interval, itterations):
         
         
         time -= 1
+        self.findSecondPosition(planeX, planeY, planeZ, time+2)
         for t in range(0,itterations+1):
 
             threading._sleep(interval)
@@ -79,31 +82,87 @@ class P3:
             semD.release()
             if self.f_Collision:
                 print "COMPLETE SYSTEM FAILURE"
-            print "X ROW:",planeX.getRow()
-            print "X COL:",planeX.getCol()
-            print "Y ROW:",planeY.getRow()
-            print "Y COL: ",planeY.getCol()
-            print "Z ROW: ",planeZ.getRow()
-            print "Z COL: ",planeZ.getCol()
+            #print "X ROW:",planeX.getRow()
+            #print "X COL:",planeX.getCol()
+            #print "Y ROW:",planeY.getRow()
+            #print "Y COL: ",planeY.getCol()
+            #print "Z ROW: ",planeZ.getRow()
+            #print "Z COL: ",planeZ.getCol()
             
-        
-
-    #Looks ahead 2 moves        
-    def lookahead(self,planeX, planeY, planeZ,t):
+    def findSecondPosition(self,planeX, planeY, planeZ, t):
+        #change to take account to the randomization in plane XYZ
+        xRow1 = planeX.getFutureRow()
+        xCol1 = planeX.getFutureCol()
+        yRow1 = planeY.getFutureRow()
+        yCol1 = self.yy1
+        zRow1 = self.zx1
+        zCol1 = planeZ.getFutureCol()
        
-        xRow1 = (planeX.getRow() + 1) % 8
-        xCol1 = (planeX.getCol() + 1) % 7
-        yRow1 = (planeY.getRow() + 1) % 8
-        yCol1 = 2
-        zRow1 = 3
-        zCol1 = (planeZ.getCol() + 1) % 7
-       
-        xRow2 = (xRow1 + 1) % 8
-        xCol2 = (xCol1 + 1) % 7
-        yRow2 = (yRow1 + 1) % 8
+        xRow2 = planeX.getFutureFutureRow()
+        xCol2 = planeX.getFutureFutureCol()
+        yRow2 = planeY.getFutureFutureRow()
         yCol2 = yCol1
         zRow2 = zRow1
-        zCol2 = (zCol1 + 1) % 7
+        zCol2 = planeZ.getFutureFutureCol()
+        l_xFlag = False
+        l_yFlag = False
+        l_zFlag = False
+
+        if (xRow2 < xRow1 and xCol2 < xCol1):
+            print "X starting at (", xRow1, ", ", xCol1, ") with initial velocity Southwest"
+        elif (xRow2 < xRow1):
+            print "X starting at (", xRow1, ", ", xCol1, ") with initial velocity West"
+        elif (xCol2 < xCol1):
+            print "X starting at (", xRow1, ", ", xCol1, ") with initial velocity South"
+        elif (xRow2 > xRow1 and xCol2 > xCol1):
+            print "X starting at (", xRow1, ", ", xCol1, ") with initial velocity Northeast"
+        elif (xRow2 > xRow1):
+            print "X starting at (", xRow1, ", ", xCol1, ") with initial velocity East"
+        else:
+            print "X starting at (", xRow1, ", ", xCol1, ") with initial velocity North"
+
+        if (yRow2 < yRow1 and yCol2 < yCol1):
+            print "Y starting at (", yRow1, ", ", yCol1, ") with initial velocity Southwest"
+        elif (yRow2 < yRow1):
+            print "Y starting at (", yRow1, ", ", yCol1, ") with initial velocity West"
+        elif (yCol2 < yCol1):
+            print "Y starting at (", yRow1, ", ", yCol1, ") with initial velocity South"
+        elif (yRow2 > yRow1 and yCol2 > yCol1):
+            print "Y starting at (", yRow1, ", ", yCol1, ") with initial velocity Northeast"
+        elif (yRow2 > yRow1):
+            print "Y starting at (", yRow1, ", ", yCol1, ") with initial velocity East"
+        else:
+            print "Y starting at (", yRow1, ", ", yCol1, ") with initial velocity North"
+
+        if (zRow2 < zRow1 and zCol2 < zCol1):
+            print "Z starting at (", zRow1, ", ", zCol1, ") with initial velocity Southwest"
+        elif (zRow2 < zRow1):
+            print "Z starting at (", zRow1, ", ", zCol1, ") with initial velocity West"
+        elif (zCol2 < zCol1):
+            print "Z starting at (", zRow1, ", ", zCol1, ") with initial velocity South"
+        elif (zRow2 > zRow1 and zCol2 > zCol1):
+            print "Z starting at (", zRow1, ", ", zCol1, ") with initial velocity Northeast"
+        elif (zRow2 > zRow1):
+            print "Z starting at (", zRow1, ", ", zCol1, ") with initial velocity East"
+        else:
+            print "Z starting at (", zRow1, ", ", zCol1, ") with initial velocity North"
+            
+    #Looks ahead 2 moves        
+    def lookahead(self,planeX, planeY, planeZ,t):
+       #change to take account with the randomization in plane XYZ
+        xRow1 = planeX.getFutureRow()#(planeX.getRow() + 1) % 8
+        xCol1 = planeX.getFutureCol()#(planeX.getCol() + 1) % 7
+        yRow1 = planeY.getFutureRow()
+        yCol1 = self.yy1
+        zRow1 = self.zx1
+        zCol1 = planeZ.getFutureCol()
+       
+        xRow2 = planeX.getFutureFutureRow()
+        xCol2 = planeX.getFutureFutureCol()
+        yRow2 = planeY.getFutureFutureRow()
+        yCol2 = yCol1
+        zRow2 = zRow1
+        zCol2 = planeZ.getFutureFutureCol()
         l_xFlag = False
         l_yFlag = False
         l_zFlag = False
